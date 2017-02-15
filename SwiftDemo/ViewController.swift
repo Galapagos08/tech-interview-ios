@@ -32,7 +32,7 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var countdown: UILabel!
-
+    
     /**
      * Responds to the countdown button being clicked
      *
@@ -42,12 +42,13 @@ class ViewController: UIViewController {
      * 3) The countdown logic should be inside the provided performCountdown method
      * 4) DO NOT EDIT THE METHOD SIGNATURE
      */
+    
+    @IBOutlet weak var countdownButton: UIButton!
+    
     @IBAction func countdownBtnClicked(sender: UIButton) {
-        
-        // Disable the button
-        // performCountdown()
-        // Enable the button
-
+        sender.isEnabled = false
+        performCountdown(completion: { _ in
+        })
     }
     
     /*
@@ -61,13 +62,20 @@ class ViewController: UIViewController {
      * 5) DO NOT EDIT THE METHOD SIGNATURE
      */
     func performCountdown(completion: () -> Void) {
-        
-            // For 0 to 100 {
-            // Pause the thread with this: NSThread.sleepForTimeInterval(0.5)
-            //}
+        DispatchQueue.global(qos: .userInitiated).async {
+            for i in 0...100 {
+                Thread.sleep(forTimeInterval: 0.5)
+                DispatchQueue.main.async {
+                    self.countdown.text = "\(100 - i)"
+                }
+            }
+            DispatchQueue.main.async {
+                self.countdownButton.isEnabled = true
+            }
+        }
+        completion()
     }
-    
-    
+
     // DO NOT EDIT
     // Color Change button clicked
     var colorIndex = 0
@@ -76,7 +84,7 @@ class ViewController: UIViewController {
     @IBAction func colorChangeBtnClicked(sender: UIButton) {
         
         self.view.backgroundColor = colorIndex < colors.count ? colors[colorIndex] : .white
-
+        
         colorIndex = (colorIndex + 1) % 3
     }
 }
